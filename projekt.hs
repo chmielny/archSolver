@@ -12,7 +12,7 @@ solve :: [Int] -> [Int] -> [(Int, Int)] -> [(Int, Int, GasDir)]
 solve [] _ _ = []
 solve _ [] _ = []
 solve _ _ [] = []
-solve rowVals colVals housePos = [(1,1,L)]
+--solve rowVals colVals housePos | isLegal (head col  rowVals colVals housePos
 
 
 -- funkcja sprawdzajaca czy pole jest sasiadem
@@ -52,3 +52,4 @@ isLegal (y, x) rowVals colVals houseList | y < 0 = False
                                          | rowVals!!y < 1  = False
                                          | colVals!!x < 1  = False
                                          | otherwise = True
+                                         -- DODAC WARUNEK STYKAJACYCH SIE ZBIORNIKOW Z GAZEM
