@@ -104,8 +104,20 @@ decreaseListElem list n | n < 0 = []
                         | otherwise = take n list ++ [(list!!n) - 1] ++ drop (n + 1) list
 
 
+-- funkcja sprawdzajaca czy pole jest domem
+-- opis funkcji
+-- badane pole -> lista domow ->
+-- wynik boolowski
+isHouse :: (Int, Int) -> [(Int, Int)] -> Bool
+isHouse _ [] = False
+isHouse (y, x) houses | x < 0 = True
+                      | y < 0 = True
+                      | otherwise = elem (y, x) houses
+
 -- funkcja sprawdzajaca czy pole jest sasiadem
 -- domu
+-- jesli pole jest samo w sobie domem to
+-- zwraca false
 -- zakladamy poprawnosc planszy wejsciowej
 -- opis funkcji:
 -- badane pole -> lista domow -> wynik
@@ -121,7 +133,8 @@ isNeighbour (y, x) ((b, a):bas) | y < 0                = False
 
 
 -- funkcja sprawdzajaca czy pole jest sasiadem
--- zbiornika z gazem
+-- zbiornika z gazem lub samym zbiornikiem
+-- postawionym wczesniej
 -- zakladamy poprawnosc planszy wejsciowej
 -- opis funkcji:
 -- badane pole -> lista zbiornikow -> wynik
@@ -129,6 +142,7 @@ isGasNeighbour :: (Int, Int) -> [(Int, Int, GasDir)] -> Bool
 isGasNeighbour _ [] = False
 isGasNeighbour (y, x) ((b, a, _):bas) | y < 0                    = True
                                       | x < 0                    = True
+                                      | (y, x) == (b, a)         = True
                                       | (y, x) == (b - 1, a)     = True
                                       | (y, x) == (b + 1, a)     = True
                                       | (y, x) == (b, a - 1)     = True
@@ -158,6 +172,7 @@ isLegal (y, x) rowVals colVals houseList gasList | y < 0 = False
                                                  | y > ((length rowVals) - 1) = False 
                                                  | x > ((length colVals) - 1) = False 
                                                  | isNeighbour (y, x) houseList == False   = False
+                                                 | isHouse (y, x) houseList == True        = False
                                                  | isGasNeighbour (y, x) gasList == True   = False
                                                  | elem (y,x) houseList == True            = False
                                                  | rowVals!!y < 1  = False
