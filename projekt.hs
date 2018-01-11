@@ -4,7 +4,7 @@
 data GasDir = L | P | G | D deriving Show
 
 -- typ danych opisujacy drzewo rozwiazan
-data SolutionTree = Empty| Solution [(Int, Int, GasDir)] | Node [(Int, Int, GasDir)]  SolutionTree SolutionTree SolutionTree SolutionTree deriving Show
+data SolutionTree = Empty| Solution [(Int, Int, GasDir)] | Node SolutionTree SolutionTree SolutionTree SolutionTree deriving Show
 
 
 -- funkcja rozwiazujaca zagadke logiczna architekta
@@ -15,8 +15,14 @@ solve :: [Int] -> [Int] -> [(Int, Int)] -> [(Int, Int, GasDir)]
 solve [] _ _ = []
 solve _ [] _ = []
 solve _ _ [] = []
---solve rowVals colVals housePos | isLegal (0,1) rowVals colVals housePos == True   = [(0,0,L)]
---                               | otherwise = []
+solve rowVals colVals housePos = findSolutionInTree (makeTree rowVals colVals housePos) 
+
+--zamiana drzewa rozwiazan na rozwiazanie
+findSolutionInTree :: SolutionTree -> [(Int, Int, GasDir)]
+findSolutionInTree Empty = []
+findSolutionInTree (Solution list) = list
+findSolutionInTree (Node a b c d) = (findSolutionInTree a) ++ (findSolutionInTree b) ++ (findSolutionInTree c) ++ (findSolutionInTree d)
+
 
 
 -- funkcja tworzaca drzewo rozwiazan
@@ -24,7 +30,7 @@ makeTree :: [Int] -> [Int] -> [(Int, Int)] -> SolutionTree
 makeTree [] _ _ = Empty
 makeTree _ [] _ = Empty
 makeTree _ _ [] = Empty
-makeTree rowVals colVals ((houseY, houseX):houseRest) = Node [] 
+makeTree rowVals colVals ((houseY, houseX):houseRest) = Node 
   (makeTree' (houseY - 1, houseX, D) houseRest rowVals colVals ((houseY, houseX):houseRest) [])
   (makeTree' (houseY, houseX + 1, L) houseRest rowVals colVals ((houseY, houseX):houseRest) [])
   (makeTree' (houseY + 1, houseX, G) houseRest rowVals colVals ((houseY, houseX):houseRest) [])
@@ -44,7 +50,7 @@ makeTree' (y, x, gasDir) ((yh, xh):houseRest) rowVals colVals houseList gasTanks
     | isLegal (y, x) rowVals colVals houseList gasTanks == True 
 --      = Node [(y, x, gasDir)] 
 --      = Node gasTanks 
-      = Node [] 
+      = Node 
       (makeTree' (yh - 1, xh, D) houseRest (decreaseListElem rowVals (y)) (decreaseListElem colVals (x)) houseList ((y, x, gasDir):gasTanks)) 
       (makeTree' (yh, xh + 1, L) houseRest (decreaseListElem rowVals (y)) (decreaseListElem colVals (x)) houseList ((y, x, gasDir):gasTanks)) 
       (makeTree' (yh + 1, xh, G) houseRest (decreaseListElem rowVals (y)) (decreaseListElem colVals (x)) houseList ((y, x, gasDir):gasTanks)) 
