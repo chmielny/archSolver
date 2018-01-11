@@ -116,8 +116,6 @@ isHouse (y, x) houses | x < 0 = True
 
 -- funkcja sprawdzajaca czy pole jest sasiadem
 -- domu
--- jesli pole jest samo w sobie domem to
--- zwraca false
 -- zakladamy poprawnosc planszy wejsciowej
 -- opis funkcji:
 -- badane pole -> lista domow -> wynik
