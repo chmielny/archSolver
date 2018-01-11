@@ -4,7 +4,7 @@
 data GasDir = L | P | G | D deriving Show
 
 -- typ danych opisujacy drzewo rozwiazan
-data SolutionTree = Empty | Node [(Int, Int, GasDir)]  SolutionTree SolutionTree SolutionTree SolutionTree deriving Show
+data SolutionTree = Empty| Solution [(Int, Int, GasDir)] | Node [(Int, Int, GasDir)]  SolutionTree SolutionTree SolutionTree SolutionTree deriving Show
 
 
 -- funkcja rozwiazujaca zagadke logiczna architekta
@@ -25,29 +25,39 @@ makeTree [] _ _ = Empty
 makeTree _ [] _ = Empty
 makeTree _ _ [] = Empty
 makeTree rowVals colVals ((houseY, houseX):houseRest) = Node [] 
-  (makeTree' (houseY - 1, houseX, G) houseRest rowVals colVals ((houseY, houseX):houseRest) [])
-  (makeTree' (houseY, houseX + 1, G) houseRest rowVals colVals ((houseY, houseX):houseRest) [])
+  (makeTree' (houseY - 1, houseX, D) houseRest rowVals colVals ((houseY, houseX):houseRest) [])
+  (makeTree' (houseY, houseX + 1, L) houseRest rowVals colVals ((houseY, houseX):houseRest) [])
   (makeTree' (houseY + 1, houseX, G) houseRest rowVals colVals ((houseY, houseX):houseRest) [])
-  (makeTree' (houseY, houseX - 1, G) houseRest rowVals colVals ((houseY, houseX):houseRest) [])
+  (makeTree' (houseY, houseX - 1, P) houseRest rowVals colVals ((houseY, houseX):houseRest) [])
 
 
 --                                   house                         const house list  actual gas tanks
 makeTree' :: (Int, Int, GasDir) -> [(Int, Int)] -> [Int] -> [Int] -> [(Int, Int)] -> [(Int, Int, GasDir)] -> SolutionTree
-makeTree' _ [] _ _ _ _ = Empty -- rozwiazanie zagadki to ten przypadek
+makeTree' (y, x, gasDir) [] rowVals colVals houseList gasTanks 
+    |  isLegal (y, x) rowVals colVals houseList gasTanks == True  
+       = Solution ((y, x, gasDir):gasTanks) -- rozwiazanie zagadki to ten przypadek
+    | otherwise = Empty
 makeTree' _ _ [] _ _ _ = Empty
 makeTree' _ _ _ [] _ _ = Empty
 makeTree' _ _ _ _ [] _ = Empty
 makeTree' (y, x, gasDir) ((yh, xh):houseRest) rowVals colVals houseList gasTanks 
     | isLegal (y, x) rowVals colVals houseList gasTanks == True 
-      = Node [(y, x, gasDir)] 
-      (makeTree' (yh - 1, xh, D) houseRest rowVals colVals houseList ((y, x, gasDir):gasTanks)) 
-      (makeTree' (yh, xh + 1, L) houseRest rowVals colVals houseList ((y, x, gasDir):gasTanks)) 
-      (makeTree' (yh + 1, xh, G) houseRest rowVals colVals houseList ((y, x, gasDir):gasTanks)) 
-      (makeTree' (yh, xh - 1, P) houseRest rowVals colVals houseList ((y, x, gasDir):gasTanks)) 
+--      = Node [(y, x, gasDir)] 
+--      = Node gasTanks 
+      = Node [] 
+      (makeTree' (yh - 1, xh, D) houseRest (decreaseListElem rowVals (y)) (decreaseListElem colVals (x)) houseList ((y, x, gasDir):gasTanks)) 
+      (makeTree' (yh, xh + 1, L) houseRest (decreaseListElem rowVals (y)) (decreaseListElem colVals (x)) houseList ((y, x, gasDir):gasTanks)) 
+      (makeTree' (yh + 1, xh, G) houseRest (decreaseListElem rowVals (y)) (decreaseListElem colVals (x)) houseList ((y, x, gasDir):gasTanks)) 
+      (makeTree' (yh, xh - 1, P) houseRest (decreaseListElem rowVals (y)) (decreaseListElem colVals (x)) houseList ((y, x, gasDir):gasTanks)) 
     | otherwise = Empty
 
 
-
+-- funkcja zmniejszajaca n-ty element listy o 1
+decreaseListElem :: [Int] -> Int -> [Int]
+decreaseListElem [] _ = []
+decreaseListElem list n | n < 0 = []
+                        | n > ((length list) -1) = []
+                        | otherwise = take n list ++ [(list!!n) - 1] ++ drop (n + 1) list
 
 
 -- funkcja sprawdzajaca czy pole jest sasiadem
