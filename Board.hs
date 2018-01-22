@@ -1,5 +1,5 @@
 module Board where
-
+import Solver
 createBoard :: Int -> [[Char]] -> String
 createBoard size values = do
     row <- [1..size]
@@ -24,7 +24,11 @@ createBoard size values = do
                 create node link
                     where create node link =
                             case (node, link) of (_, 1) -> "|"
-                                                 (n, 4) -> [n]
+                                                 (n, 4) -> case n of 'D' -> "v"
+                                                                     'P' -> ">"
+                                                                     'L' -> "<"
+                                                                     'G' -> "^"
+                                                                     _ -> [n]
                                                  (_, _) -> " "
 
 
@@ -32,7 +36,20 @@ createBoard size values = do
 parseCoordinates :: Int ->[(Int, Int)] -> [String]
 parseCoordinates size coordinates = do
      row     <-  [0..size-1]
-     let tuples  =  filter (\(a,b)->a == row) coordinates
      [do index <- [0..size-1]
-         if (elem ((row, index)) tuples) then "*" else " "]
+         if (elem ((row, index)) coordinates) then "*" else " "]
 
+
+parseResult :: Int -> [(Int, Int)] -> [(Int, Int, GasDir)] -> [String]
+parseResult size coordinates result = do
+     let mappedResult = map (\(a,b,c)->(a,b, show c)) result
+     row  <-  [0..size-1]
+     [do index <- [0..size-1]
+         if (elem (row, index) coordinates)then "*"
+         else tryResult (row, index) mappedResult]
+
+
+tryResult :: (Int, Int)-> [(Int, Int, String)] -> String
+tryResult _ [] = " "
+tryResult (row, index) ((r,i,c):xs)  | row == r && index == i = c
+                                     | otherwise = tryResult (row, index) xs

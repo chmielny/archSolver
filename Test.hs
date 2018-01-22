@@ -1,6 +1,6 @@
 module Test where
-
-import Main
+import Board
+import Solver
 
 test1 = do
     let v = [" *    ","      ","      ","  * * ","*   * ","  *  *"]
@@ -27,3 +27,10 @@ test3 = do
     print axisY
     putStrLn board
     print "End"
+
+test4 = do
+    let c = [(0,1),(3,2),(3,4),(4,0),(4,4),(5,2),(5,5)];
+    let d = [(4,5,D),(5,1,P),(4,3,P),(3,0,D),(2,4,D),(2,2,D),(0,2,L)]
+    let size = 6
+    let r = parseResult size c d
+    putStrLn r
