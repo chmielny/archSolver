@@ -27,6 +27,11 @@ main =  do  putStrLn "Hello in the puzzle solver"
             let parsedSolution = parseResult size coordinates solution
             let solutionBoard = createBoard size parsedSolution
             putStrLn solutionBoard
+            putStrLn "Type name of output file with solution:"
+            outFile <- getLine
+            outh <- openFile outFile WriteMode
+            hPrint outh solution
+            hClose outh
             print "End"
 
 
