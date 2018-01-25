@@ -12,7 +12,7 @@ main =  do  putStrLn "Hello in the puzzle solver"
             let axisX =  convertToInt.head $ content
             let axisY =  convertToInt.head.tail $ content
             let coordinates =  convertToTuple.head.tail.tail $ content
-            let size = length axisX
+            let size = max (length axisY) (length axisX)
             let parsed = parseCoordinates size coordinates
             let board = createBoard size parsed
             putStrLn "Loaded data:"
